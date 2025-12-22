@@ -1,0 +1,162 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Laserfiche Repository Connector",
+    "description": "Custom connector for Laserfiche Repository CRUD operations",
+    "version": "1.0.0"
+  },
+  "host": "api.laserfiche.com",
+  "basePath": "/repository/v1",
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "securityDefinitions": {
+    "oauth2": {
+      "type": "oauth2",
+      "flow": "application",
+      "tokenUrl": "https://signin.laserfiche.com/oauth/token",
+      "scopes": {
+        "repository.Read": "Read repository",
+        "repository.Write": "Write repository"
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth2": [
+        "repository.Read",
+        "repository.Write"
+      ]
+    }
+  ],
+  "paths": {
+    "/Repositories": {
+      "get": {
+        "summary": "Get Repositories",
+        "operationId": "GetRepositories",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Repositories/{repoId}/Entries/{entryId}/children": {
+      "get": {
+        "summary": "Get Folder Contents",
+        "operationId": "GetFolderContents",
+        "parameters": [
+          {
+            "name": "repoId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Repositories/{repoId}/Entries": {
+      "post": {
+        "summary": "Create Folder or Document Entry",
+        "operationId": "CreateEntry",
+        "parameters": [
+          {
+            "name": "repoId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "parentId": { "type": "integer" },
+                "entryType": { "type": "string" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/Repositories/{repoId}/Entries/{entryId}/Import": {
+      "post": {
+        "summary": "Upload Document Content",
+        "operationId": "UploadDocument",
+        "consumes": ["application/octet-stream"],
+        "parameters": [
+          {
+            "name": "repoId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "file",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Uploaded"
+          }
+        }
+      }
+    },
+    "/Repositories/{repoId}/Entries/{entryId}": {
+      "delete": {
+        "summary": "Delete Entry",
+        "operationId": "DeleteEntry",
+        "parameters": [
+          {
+            "name": "repoId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    }
+  }
+}
