@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Laserfiche Repository Connector",
-    "description": "Power Automate custom connector for Laserfiche Repository CRUD",
-    "version": "1.0.3"
+    "title": "Laserfiche Repository Connector (API Key)",
+    "description": "Power Automate custom connector for Laserfiche Repository CRUD using API Key authentication",
+    "version": "1.1.0"
   },
   "host": "api.laserfiche.com",
   "basePath": "/repository/v1",
@@ -15,6 +15,18 @@
   ],
   "produces": [
     "application/json"
+  ],
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
   ],
   "paths": {
     "/Repositories": {
@@ -107,7 +119,7 @@
         "operationId": "UploadDocument",
         "summary": "Upload Document Content",
         "consumes": [
-          "application/octet-stream"
+          "multipart/form-data"
         ],
         "parameters": [
           {
