@@ -2,49 +2,36 @@
   "swagger": "2.0",
   "info": {
     "title": "Laserfiche Repository Connector",
-    "description": "Custom connector for Laserfiche Repository CRUD operations",
-    "version": "1.0.0"
+    "description": "Power Automate custom connector for Laserfiche Repository CRUD",
+    "version": "1.0.3"
   },
   "host": "api.laserfiche.com",
   "basePath": "/repository/v1",
-  "schemes": ["https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
-  "securityDefinitions": {
-    "oauth2": {
-      "type": "oauth2",
-      "flow": "application",
-      "tokenUrl": "https://signin.laserfiche.com/oauth/token",
-      "scopes": {
-        "repository.Read": "Read repository",
-        "repository.Write": "Write repository"
-      }
-    }
-  },
-  "security": [
-    {
-      "oauth2": [
-        "repository.Read",
-        "repository.Write"
-      ]
-    }
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
   ],
   "paths": {
     "/Repositories": {
       "get": {
-        "summary": "Get Repositories",
         "operationId": "GetRepositories",
+        "summary": "Get Repositories",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
     },
     "/Repositories/{repoId}/Entries/{entryId}/children": {
       "get": {
-        "summary": "Get Folder Contents",
         "operationId": "GetFolderContents",
+        "summary": "Get Folder Contents",
         "parameters": [
           {
             "name": "repoId",
@@ -56,20 +43,21 @@
             "name": "entryId",
             "in": "path",
             "required": true,
-            "type": "integer"
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
         }
       }
     },
     "/Repositories/{repoId}/Entries": {
       "post": {
-        "summary": "Create Folder or Document Entry",
         "operationId": "CreateEntry",
+        "summary": "Create Folder or Document",
         "parameters": [
           {
             "name": "repoId",
@@ -83,10 +71,26 @@
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "name",
+                "parentId",
+                "entryType"
+              ],
               "properties": {
-                "name": { "type": "string" },
-                "parentId": { "type": "integer" },
-                "entryType": { "type": "string" }
+                "name": {
+                  "type": "string"
+                },
+                "parentId": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "entryType": {
+                  "type": "string",
+                  "enum": [
+                    "Folder",
+                    "Document"
+                  ]
+                }
               }
             }
           }
@@ -100,9 +104,11 @@
     },
     "/Repositories/{repoId}/Entries/{entryId}/Import": {
       "post": {
-        "summary": "Upload Document Content",
         "operationId": "UploadDocument",
-        "consumes": ["application/octet-stream"],
+        "summary": "Upload Document Content",
+        "consumes": [
+          "application/octet-stream"
+        ],
         "parameters": [
           {
             "name": "repoId",
@@ -114,16 +120,14 @@
             "name": "entryId",
             "in": "path",
             "required": true,
-            "type": "integer"
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "file",
-            "in": "body",
+            "in": "formData",
             "required": true,
-            "schema": {
-              "type": "string",
-              "format": "binary"
-            }
+            "type": "file"
           }
         ],
         "responses": {
@@ -135,8 +139,8 @@
     },
     "/Repositories/{repoId}/Entries/{entryId}": {
       "delete": {
-        "summary": "Delete Entry",
         "operationId": "DeleteEntry",
+        "summary": "Delete Entry",
         "parameters": [
           {
             "name": "repoId",
@@ -148,7 +152,8 @@
             "name": "entryId",
             "in": "path",
             "required": true,
-            "type": "integer"
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "responses": {
