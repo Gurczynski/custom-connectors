@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Microsoft Bookings (Graph Custom Connector)
   description: Power Automate custom connector for Microsoft Bookings via Microsoft Graph
-  version: 1.0.0
+  version: 1.0.1
 
 servers:
   - url: https://graph.microsoft.com/v1.0
@@ -27,7 +27,6 @@ paths:
   /solutions/bookingBusinesses:
     get:
       summary: List booking calendars
-      description: Returns all Microsoft Bookings calendars (bookingBusinesses)
       operationId: ListBookingBusinesses
       responses:
         '200':
@@ -61,7 +60,6 @@ paths:
             operationId: ListBookingBusinesses
             value-path: value
             value-title: displayName
-            value-id: id
       responses:
         '200':
           description: Services retrieved
@@ -94,7 +92,6 @@ paths:
             operationId: ListBookingBusinesses
             value-path: value
             value-title: displayName
-            value-id: id
       responses:
         '200':
           description: Appointments retrieved
@@ -121,7 +118,6 @@ paths:
             operationId: ListBookingBusinesses
             value-path: value
             value-title: displayName
-            value-id: id
       requestBody:
         required: true
         content:
@@ -145,7 +141,6 @@ paths:
                     operationId: ListBookingServices
                     value-path: value
                     value-title: displayName
-                    value-id: id
                     parameters:
                       businessId:
                         parameter: businessId
