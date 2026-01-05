@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   title: Microsoft Bookings (Graph Custom Connector)
+  version: 1.0.2
   description: Power Automate custom connector for Microsoft Bookings via Microsoft Graph
-  version: 1.0.1
 
 servers:
   - url: https://graph.microsoft.com/v1.0
@@ -16,7 +16,7 @@ components:
           authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
           tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
           scopes:
-            https://graph.microsoft.com/.default: Access Microsoft Graph
+            https://graph.microsoft.com/.default: Microsoft Graph access
 
 security:
   - oauth2:
@@ -26,11 +26,11 @@ paths:
 
   /solutions/bookingBusinesses:
     get:
-      summary: List booking calendars
       operationId: ListBookingBusinesses
+      summary: List booking calendars
       responses:
         '200':
-          description: Calendars retrieved
+          description: OK
           content:
             application/json:
               schema:
@@ -48,8 +48,8 @@ paths:
 
   /solutions/bookingBusinesses/{businessId}/services:
     get:
-      summary: List services for calendar
       operationId: ListBookingServices
+      summary: List services for a calendar
       parameters:
         - name: businessId
           in: path
@@ -62,7 +62,7 @@ paths:
             value-title: displayName
       responses:
         '200':
-          description: Services retrieved
+          description: OK
           content:
             application/json:
               schema:
@@ -79,35 +79,9 @@ paths:
                           type: string
 
   /solutions/bookingBusinesses/{businessId}/appointments:
-    get:
-      summary: List appointments
-      operationId: ListBookingAppointments
-      parameters:
-        - name: businessId
-          in: path
-          required: true
-          schema:
-            type: string
-          x-ms-dynamic-values:
-            operationId: ListBookingBusinesses
-            value-path: value
-            value-title: displayName
-      responses:
-        '200':
-          description: Appointments retrieved
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  value:
-                    type: array
-                    items:
-                      type: object
-
     post:
-      summary: Create appointment
       operationId: CreateBookingAppointment
+      summary: Create booking appointment
       parameters:
         - name: businessId
           in: path
@@ -162,7 +136,7 @@ paths:
                       type: string
       responses:
         '201':
-          description: Appointment created
+          description: Created
           content:
             application/json:
               schema:
