@@ -1,0 +1,174 @@
+openapi: 3.0.1
+info:
+  title: Microsoft Bookings (Graph Custom Connector)
+  description: Power Automate custom connector for Microsoft Bookings via Microsoft Graph
+  version: 1.0.0
+
+servers:
+  - url: https://graph.microsoft.com/v1.0
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+          tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
+          scopes:
+            https://graph.microsoft.com/.default: Access Microsoft Graph
+
+security:
+  - oauth2:
+      - https://graph.microsoft.com/.default
+
+paths:
+
+  /solutions/bookingBusinesses:
+    get:
+      summary: List booking calendars
+      description: Returns all Microsoft Bookings calendars (bookingBusinesses)
+      operationId: ListBookingBusinesses
+      responses:
+        '200':
+          description: Calendars retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        displayName:
+                          type: string
+
+  /solutions/bookingBusinesses/{businessId}/services:
+    get:
+      summary: List services for calendar
+      operationId: ListBookingServices
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: string
+          x-ms-dynamic-values:
+            operationId: ListBookingBusinesses
+            value-path: value
+            value-title: displayName
+            value-id: id
+      responses:
+        '200':
+          description: Services retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        displayName:
+                          type: string
+
+  /solutions/bookingBusinesses/{businessId}/appointments:
+    get:
+      summary: List appointments
+      operationId: ListBookingAppointments
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: string
+          x-ms-dynamic-values:
+            operationId: ListBookingBusinesses
+            value-path: value
+            value-title: displayName
+            value-id: id
+      responses:
+        '200':
+          description: Appointments retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: array
+                    items:
+                      type: object
+
+    post:
+      summary: Create appointment
+      operationId: CreateBookingAppointment
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: string
+          x-ms-dynamic-values:
+            operationId: ListBookingBusinesses
+            value-path: value
+            value-title: displayName
+            value-id: id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - customerName
+                - customerEmailAddress
+                - serviceId
+                - startDateTime
+                - endDateTime
+              properties:
+                customerName:
+                  type: string
+                customerEmailAddress:
+                  type: string
+                serviceId:
+                  type: string
+                  x-ms-dynamic-values:
+                    operationId: ListBookingServices
+                    value-path: value
+                    value-title: displayName
+                    value-id: id
+                    parameters:
+                      businessId:
+                        parameter: businessId
+                startDateTime:
+                  type: object
+                  properties:
+                    dateTime:
+                      type: string
+                      format: date-time
+                    timeZone:
+                      type: string
+                endDateTime:
+                  type: object
+                  properties:
+                    dateTime:
+                      type: string
+                      format: date-time
+                    timeZone:
+                      type: string
+      responses:
+        '201':
+          description: Appointment created
+          content:
+            application/json:
+              schema:
+                type: object
