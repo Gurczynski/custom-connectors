@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Microsoft Bookings (Graph Custom Connector)
-  version: 1.0.2
+  version: 1.0.3
   description: Power Automate custom connector for Microsoft Bookings via Microsoft Graph
 
 servers:
@@ -92,6 +92,7 @@ paths:
             operationId: ListBookingBusinesses
             value-path: value
             value-title: displayName
+
       requestBody:
         required: true
         content:
@@ -99,18 +100,24 @@ paths:
             schema:
               type: object
               required:
-                - customerName
-                - customerEmailAddress
+                - subject
                 - serviceId
                 - startDateTime
                 - endDateTime
+                - timeZone
+                - customerName
+                - customerEmailAddress
               properties:
-                customerName:
+
+                subject:
                   type: string
-                customerEmailAddress:
-                  type: string
+                  title: Subject
+                  description: Title of the appointment
+
                 serviceId:
                   type: string
+                  title: Calendar / Service
+                  description: Booking service
                   x-ms-dynamic-values:
                     operationId: ListBookingServices
                     value-path: value
@@ -118,22 +125,65 @@ paths:
                     parameters:
                       businessId:
                         parameter: businessId
+
                 startDateTime:
-                  type: object
-                  properties:
-                    dateTime:
-                      type: string
-                      format: date-time
-                    timeZone:
-                      type: string
+                  type: string
+                  format: date-time
+                  title: Start time
+
                 endDateTime:
-                  type: object
-                  properties:
-                    dateTime:
-                      type: string
-                      format: date-time
-                    timeZone:
-                      type: string
+                  type: string
+                  format: date-time
+                  title: End time
+
+                timeZone:
+                  type: string
+                  title: Time zone
+                  enum:
+                    - Eastern Standard Time
+                    - Central Standard Time
+                    - Mountain Standard Time
+                    - Pacific Standard Time
+
+                customerName:
+                  type: string
+                  title: Full Name
+
+                customerEmailAddress:
+                  type: string
+                  title: Employee Email
+
+                body:
+                  type: string
+                  title: Body
+                  description: Additional details for the appointment
+                  x-ms-editor: multiline
+
+                importance:
+                  type: string
+                  title: Importance
+                  enum:
+                    - low
+                    - normal
+                    - high
+
+                isAllDay:
+                  type: boolean
+                  title: Is all day event?
+
+                showAs:
+                  type: string
+                  title: Show as
+                  enum:
+                    - busy
+                    - free
+                    - oof
+
+                reminderMinutesBeforeStart:
+                  type: integer
+                  title: Reminder
+                  default: 1440
+
       responses:
         '201':
           description: Created
