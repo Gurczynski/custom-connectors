@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Microsoft Bookings (Graph Custom Connector)
-  version: 1.0.3
+  version: 1.0.4
   description: Power Automate custom connector for Microsoft Bookings via Microsoft Graph
 
 servers:
@@ -157,7 +157,6 @@ paths:
                   type: string
                   title: Body
                   description: Additional details for the appointment
-                  x-ms-editor: multiline
 
                 importance:
                   type: string
