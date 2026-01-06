@@ -1,177 +1,166 @@
-swagger: "2.0"
-info:
-  title: Outlook Calendar Events V2 (Service Principal)
-  version: "1.0"
-  description: Create Outlook calendar events with full V2 options using app-only authentication
-
-host: graph.microsoft.com
-basePath: /v1.0
-schemes:
-  - https
-
-securityDefinitions:
-  oauth2:
-    type: oauth2
-    flow: accessCode
-    authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
-    tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
-    scopes:
-      https://graph.microsoft.com/.default: Graph access
-
-security:
-  - oauth2:
-      - https://graph.microsoft.com/.default
-
-paths:
-
-  ###########################################################################
-  # LIST CALENDARS (dynamic values source – MUST be first)
-  ###########################################################################
-  /users/{userId}/calendars:
-    get:
-      operationId: ListCalendars
-      summary: List calendars for a user
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          type: string
-        # Dummy query param required for Power Automate to register the operation
-        - name: includeHidden
-          in: query
-          required: false
-          type: string
-      responses:
-        200:
-          description: OK
-          schema:
-            type: object
-            properties:
-              value:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    name:
-                      type: string
-
-  ###########################################################################
-  # CREATE EVENT (V2 EQUIVALENT)
-  ###########################################################################
-  /users/{userId}/calendars/{calendarId}/events:
-    post:
-      operationId: CreateEvent
-      summary: Create calendar event
-      parameters:
-
-        # User Id input (UPN or ObjectId)
-        - name: userId
-          in: path
-          required: true
-          type: string
-
-        # Calendar dropdown (dynamic values)
-        - name: calendarId
-          in: path
-          required: true
-          type: string
-          x-ms-dynamic-values:
-            operationId: ListCalendars
-            value-path: value
-            value-title: name
-            parameters:
-              userId:
-                parameter: userId
-
-        # Event body
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            required:
-              - subject
-              - start
-              - end
-            properties:
-
-              subject:
-                type: string
-
-              body:
-                type: object
-                properties:
-                  contentType:
-                    type: string
-                    description: HTML or Text
-                  content:
-                    type: string
-
-              start:
-                type: object
-                properties:
-                  dateTime:
-                    type: string
-                  timeZone:
-                    type: string
-
-              end:
-                type: object
-                properties:
-                  dateTime:
-                    type: string
-                  timeZone:
-                    type: string
-
-              # === Create event (V2) settings ===
-              showAs:
-                type: string
-                description: free, tentative, busy, oof, workingElsewhere
-
-              importance:
-                type: string
-                description: low, normal, high
-
-              sensitivity:
-                type: string
-                description: normal, personal, private, confidential
-
-              isAllDay:
-                type: boolean
-
-              reminderMinutesBeforeStart:
-                type: integer
-
-              isReminderOn:
-                type: boolean
-
-              responseRequested:
-                type: boolean
-
-              attendees:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    emailAddress:
-                      type: object
-                      properties:
-                        address:
-                          type: string
-                        name:
-                          type: string
-                    type:
-                      type: string
-                      description: required or optional
-
-              location:
-                type: object
-                properties:
-                  displayName:
-                    type: string
-
-      responses:
-        201:
-          description: Created
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Outlook Calendar Events V2 (Service Principal)",
+    "version": "1.0",
+    "description": "Create Outlook calendar events with full Create Event V2 options using app-only authentication"
+  },
+  "host": "graph.microsoft.com",
+  "basePath": "/v1.0",
+  "schemes": ["https"],
+  "securityDefinitions": {
+    "oauth2": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      "scopes": {
+        "https://graph.microsoft.com/.default": "Graph access"
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth2": ["https://graph.microsoft.com/.default"]
+    }
+  ],
+  "paths": {
+    "/users/{userId}/calendars": {
+      "get": {
+        "operationId": "ListCalendars",
+        "summary": "List calendars for a user",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "includeHidden",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/calendars/{calendarId}/events": {
+      "post": {
+        "operationId": "CreateEvent",
+        "summary": "Create calendar event",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "calendarId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "x-ms-dynamic-values": {
+              "operationId": "ListCalendars",
+              "value-path": "value",
+              "value-title": "name",
+              "parameters": {
+                "userId": {
+                  "parameter": "userId"
+                }
+              }
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["subject", "start", "end"],
+              "properties": {
+                "subject": { "type": "string" },
+                "body": {
+                  "type": "object",
+                  "properties": {
+                    "contentType": { "type": "string" },
+                    "content": { "type": "string" }
+                  }
+                },
+                "start": {
+                  "type": "object",
+                  "properties": {
+                    "dateTime": { "type": "string" },
+                    "timeZone": { "type": "string" }
+                  }
+                },
+                "end": {
+                  "type": "object",
+                  "properties": {
+                    "dateTime": { "type": "string" },
+                    "timeZone": { "type": "string" }
+                  }
+                },
+                "showAs": { "type": "string" },
+                "importance": { "type": "string" },
+                "sensitivity": { "type": "string" },
+                "isAllDay": { "type": "boolean" },
+                "reminderMinutesBeforeStart": { "type": "integer" },
+                "isReminderOn": { "type": "boolean" },
+                "responseRequested": { "type": "boolean" },
+                "attendees": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "emailAddress": {
+                        "type": "object",
+                        "properties": {
+                          "address": { "type": "string" },
+                          "name": { "type": "string" }
+                        }
+                      },
+                      "type": { "type": "string" }
+                    }
+                  }
+                },
+                "location": {
+                  "type": "object",
+                  "properties": {
+                    "displayName": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    }
+  }
+}
