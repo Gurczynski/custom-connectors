@@ -12,7 +12,8 @@ schemes:
 securityDefinitions:
   oauth2:
     type: oauth2
-    flow: application
+    flow: accessCode
+    authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
     tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
     scopes:
       https://graph.microsoft.com/.default: Graph access
