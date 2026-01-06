@@ -1,0 +1,124 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Group Calendar – Create Event (V2)",
+    "version": "1.0",
+    "description": "Create events in Microsoft 365 Group calendars with Create Event V2 fields using service principal authentication"
+  },
+  "host": "graph.microsoft.com",
+  "basePath": "/v1.0",
+  "schemes": ["https"],
+  "securityDefinitions": {
+    "oauth2": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      "scopes": {
+        "https://graph.microsoft.com/.default": "Microsoft Graph"
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth2": ["https://graph.microsoft.com/.default"]
+    }
+  ],
+  "paths": {
+    "/groups/{groupId}/calendar/events": {
+      "post": {
+        "operationId": "Create_event_in_group_calendar",
+        "summary": "Create event in group calendar",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Microsoft 365 Group ID"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["subject", "start", "end"],
+              "properties": {
+                "subject": { "type": "string" },
+
+                "body": {
+                  "type": "object",
+                  "properties": {
+                    "contentType": { "type": "string" },
+                    "content": { "type": "string" }
+                  }
+                },
+
+                "start": {
+                  "type": "object",
+                  "properties": {
+                    "dateTime": { "type": "string" },
+                    "timeZone": { "type": "string" }
+                  }
+                },
+
+                "end": {
+                  "type": "object",
+                  "properties": {
+                    "dateTime": { "type": "string" },
+                    "timeZone": { "type": "string" }
+                  }
+                },
+
+                "showAs": {
+                  "type": "string",
+                  "description": "Accepted but ignored for group calendars (Microsoft limitation)"
+                },
+
+                "importance": { "type": "string" },
+
+                "sensitivity": { "type": "string" },
+
+                "isAllDay": { "type": "boolean" },
+
+                "reminderMinutesBeforeStart": { "type": "integer" },
+
+                "isReminderOn": { "type": "boolean" },
+
+                "responseRequested": { "type": "boolean" },
+
+                "attendees": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "emailAddress": {
+                        "type": "object",
+                        "properties": {
+                          "address": { "type": "string" },
+                          "name": { "type": "string" }
+                        }
+                      },
+                      "type": { "type": "string" }
+                    }
+                  }
+                },
+
+                "location": {
+                  "type": "object",
+                  "properties": {
+                    "displayName": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Created" }
+        }
+      }
+    }
+  }
+}
