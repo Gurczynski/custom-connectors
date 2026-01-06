@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  title: Outlook Calendar Events (Service Principal)
+  title: Outlook Calendar Events V2 (Service Principal)
   version: "1.0"
-  description: Create Outlook calendar events using app-only authentication with calendar selection
+  description: Create Outlook calendar events with full V2 options using app-only authentication
 
 host: graph.microsoft.com
 basePath: /v1.0
@@ -25,18 +25,18 @@ security:
 paths:
 
   ###########################################################################
-  # MUST COME FIRST – dynamic-values source operation
+  # LIST CALENDARS (dynamic values source – MUST be first)
   ###########################################################################
   /users/{userId}/calendars:
     get:
       operationId: ListCalendars
-      summary: List calendars for a mailbox
+      summary: List calendars for a user
       parameters:
         - name: userId
           in: path
           required: true
           type: string
-        # Dummy query parameter REQUIRED for Power Automate runtime registration
+        # Dummy query param required for Power Automate to register the operation
         - name: includeHidden
           in: query
           required: false
@@ -66,11 +66,13 @@ paths:
       summary: Create calendar event
       parameters:
 
+        # User Id input (UPN or ObjectId)
         - name: userId
           in: path
           required: true
           type: string
 
+        # Calendar dropdown (dynamic values)
         - name: calendarId
           in: path
           required: true
@@ -83,6 +85,7 @@ paths:
               userId:
                 parameter: userId
 
+        # Event body
         - name: body
           in: body
           required: true
@@ -102,6 +105,7 @@ paths:
                 properties:
                   contentType:
                     type: string
+                    description: HTML or Text
                   content:
                     type: string
 
@@ -121,14 +125,18 @@ paths:
                   timeZone:
                     type: string
 
+              # === Create event (V2) settings ===
               showAs:
                 type: string
+                description: free, tentative, busy, oof, workingElsewhere
 
               importance:
                 type: string
+                description: low, normal, high
 
               sensitivity:
                 type: string
+                description: normal, personal, private, confidential
 
               isAllDay:
                 type: boolean
@@ -156,6 +164,7 @@ paths:
                           type: string
                     type:
                       type: string
+                      description: required or optional
 
               location:
                 type: object
