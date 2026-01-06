@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Outlook Calendar Events V2 (Service Principal)",
+    "title": "Outlook Calendar Events V2 (Users + Groups)",
     "version": "1.0",
-    "description": "Create Outlook calendar events with full Create Event V2 options using app-only authentication"
+    "description": "Create Outlook calendar events (Create Event V2 parity) using service principal authentication for user, shared, and group calendars"
   },
   "host": "graph.microsoft.com",
   "basePath": "/v1.0",
@@ -15,7 +15,7 @@
       "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
       "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
       "scopes": {
-        "https://graph.microsoft.com/.default": "Graph access"
+        "https://graph.microsoft.com/.default": "Microsoft Graph"
       }
     }
   },
@@ -27,8 +27,8 @@
   "paths": {
     "/users/{userId}/calendars": {
       "get": {
-        "operationId": "ListCalendars",
-        "summary": "List calendars for a user",
+        "operationId": "ListUserCalendars",
+        "summary": "List calendars for user or shared mailbox",
         "parameters": [
           {
             "name": "userId",
@@ -37,7 +37,7 @@
             "type": "string"
           },
           {
-            "name": "includeHidden",
+            "name": "forceRegister",
             "in": "query",
             "required": false,
             "type": "string"
@@ -65,10 +65,36 @@
         }
       }
     },
+    "/groups": {
+      "get": {
+        "operationId": "ListGroups",
+        "summary": "List Microsoft 365 Groups",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "displayName": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users/{userId}/calendars/{calendarId}/events": {
       "post": {
-        "operationId": "CreateEvent",
-        "summary": "Create calendar event",
+        "operationId": "CreateUserEvent",
+        "summary": "Create event in user or shared mailbox calendar",
         "parameters": [
           {
             "name": "userId",
@@ -82,7 +108,7 @@
             "required": true,
             "type": "string",
             "x-ms-dynamic-values": {
-              "operationId": "ListCalendars",
+              "operationId": "ListUserCalendars",
               "value-path": "value",
               "value-title": "name",
               "parameters": {
@@ -156,9 +182,65 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
+          "201": { "description": "Created" }
+        }
+      }
+    },
+    "/groups/{groupId}/calendar/events": {
+      "post": {
+        "operationId": "CreateGroupEvent",
+        "summary": "Create event in Microsoft 365 Group calendar",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "x-ms-dynamic-values": {
+              "operationId": "ListGroups",
+              "value-path": "value",
+              "value-title": "displayName"
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["subject", "start", "end"],
+              "properties": {
+                "subject": { "type": "string" },
+                "body": {
+                  "type": "object",
+                  "properties": {
+                    "contentType": { "type": "string" },
+                    "content": { "type": "string" }
+                  }
+                },
+                "start": {
+                  "type": "object",
+                  "properties": {
+                    "dateTime": { "type": "string" },
+                    "timeZone": { "type": "string" }
+                  }
+                },
+                "end": {
+                  "type": "object",
+                  "properties": {
+                    "dateTime": { "type": "string" },
+                    "timeZone": { "type": "string" }
+                  }
+                },
+                "showAs": { "type": "string" },
+                "importance": { "type": "string" },
+                "isAllDay": { "type": "boolean" }
+              }
+            }
           }
+        ],
+        "responses": {
+          "201": { "description": "Created" }
         }
       }
     }
