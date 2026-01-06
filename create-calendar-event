@@ -1,7 +1,8 @@
 swagger: "2.0"
 info:
-  title: Outlook Events Connector
+  title: Outlook Calendar Events V2
   version: "1.0"
+  description: Create Outlook calendar events with full V2 options
 
 host: graph.microsoft.com
 basePath: /v1.0
@@ -15,16 +16,18 @@ securityDefinitions:
     authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
     tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
     scopes:
-      https://graph.microsoft.com/.default: Graph
+      https://graph.microsoft.com/.default: Graph access
 
 security:
   - oauth2:
       - https://graph.microsoft.com/.default
 
 paths:
+
   /me/calendars:
     get:
       operationId: ListCalendars
+      summary: List available calendars
       responses:
         200:
           description: OK
@@ -44,7 +47,9 @@ paths:
   /me/calendars/{calendarId}/events:
     post:
       operationId: CreateEvent
+      summary: Create calendar event
       parameters:
+
         - name: calendarId
           in: path
           required: true
@@ -59,9 +64,23 @@ paths:
           required: true
           schema:
             type: object
+            required:
+              - subject
+              - start
+              - end
             properties:
+
               subject:
                 type: string
+
+              body:
+                type: object
+                properties:
+                  contentType:
+                    type: string
+                  content:
+                    type: string
+
               start:
                 type: object
                 properties:
@@ -69,12 +88,55 @@ paths:
                     type: string
                   timeZone:
                     type: string
+
               end:
                 type: object
                 properties:
                   dateTime:
                     type: string
                   timeZone:
+                    type: string
+
+              showAs:
+                type: string
+
+              importance:
+                type: string
+
+              sensitivity:
+                type: string
+
+              isAllDay:
+                type: boolean
+
+              reminderMinutesBeforeStart:
+                type: integer
+
+              isReminderOn:
+                type: boolean
+
+              responseRequested:
+                type: boolean
+
+              attendees:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    emailAddress:
+                      type: object
+                      properties:
+                        address:
+                          type: string
+                        name:
+                          type: string
+                    type:
+                      type: string
+
+              location:
+                type: object
+                properties:
+                  displayName:
                     type: string
 
       responses:
