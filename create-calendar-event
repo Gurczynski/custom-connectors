@@ -1,141 +1,112 @@
-openapi: 3.0.1
+swagger: "2.0"
 info:
-  title: Outlook Calendar Events (Graph)
-  description: Custom connector to create Outlook calendar events (Create event V2)
-  version: 1.0.1
+  title: Outlook Calendar Events (V2-style)
+  version: "1.0"
+  description: Create Outlook calendar events with calendar selection
 
-servers:
-  - url: https://graph.microsoft.com/v1.0
+host: graph.microsoft.com
+basePath: /v1.0
+schemes:
+  - https
 
-components:
-  securitySchemes:
-    oauth2:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
-          tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
-          scopes:
-            https://graph.microsoft.com/.default: Graph access
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: accessCode
+    authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+    tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
+    scopes:
+      https://graph.microsoft.com/.default: Graph access
 
 security:
   - oauth2:
       - https://graph.microsoft.com/.default
 
 paths:
-  /me/events:
+
+  /me/calendars:
+    get:
+      operationId: ListCalendars
+      summary: List calendars for current user
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              value:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+
+  /me/calendars/{calendarId}/events:
     post:
-      operationId: CreateCalendarEvent
+      operationId: CreateEvent
       summary: Create calendar event
+      parameters:
+        - name: calendarId
+          in: path
+          required: true
+          type: string
+          x-ms-dynamic-values:
+            operationId: ListCalendars
+            value-path: value
+            value-title: name
 
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - subject
-                - start
-                - end
-              properties:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - subject
+              - start
+              - end
+            properties:
+              subject:
+                type: string
 
-                subject:
-                  type: string
+              body:
+                type: object
+                properties:
+                  contentType:
+                    type: string
+                  content:
+                    type: string
 
-                body:
-                  type: object
-                  properties:
-                    contentType:
-                      type: string
-                      enum:
-                        - HTML
-                        - Text
-                    content:
-                      type: string
+              start:
+                type: object
+                properties:
+                  dateTime:
+                    type: string
+                  timeZone:
+                    type: string
 
-                start:
-                  type: object
-                  required:
-                    - dateTime
-                    - timeZone
-                  properties:
-                    dateTime:
-                      type: string
-                    timeZone:
-                      type: string
+              end:
+                type: object
+                properties:
+                  dateTime:
+                    type: string
+                  timeZone:
+                    type: string
 
-                end:
-                  type: object
-                  required:
-                    - dateTime
-                    - timeZone
-                  properties:
-                    dateTime:
-                      type: string
-                    timeZone:
-                      type: string
+              showAs:
+                type: string
 
-                isAllDay:
-                  type: boolean
+              importance:
+                type: string
 
-                showAs:
-                  type: string
-                  enum:
-                    - free
-                    - tentative
-                    - busy
-                    - oof
-                    - workingElsewhere
+              isAllDay:
+                type: boolean
 
-                importance:
-                  type: string
-                  enum:
-                    - low
-                    - normal
-                    - high
-
-                sensitivity:
-                  type: string
-                  enum:
-                    - normal
-                    - personal
-                    - private
-                    - confidential
-
-                reminderMinutesBeforeStart:
-                  type: integer
-
-                isReminderOn:
-                  type: boolean
-
-                attendees:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      emailAddress:
-                        type: object
-                        properties:
-                          address:
-                            type: string
-                          name:
-                            type: string
-                      type:
-                        type: string
-                        enum:
-                          - required
-                          - optional
-
-                location:
-                  type: object
-                  properties:
-                    displayName:
-                      type: string
-
-                responseRequested:
-                  type: boolean
+              reminderMinutesBeforeStart:
+                type: integer
 
       responses:
-        '201':
+        201:
           description: Created
