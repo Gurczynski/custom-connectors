@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Group Calendar – Create Event (V2)",
+    "title": "Group Calendar Create Event (V4-like)",
     "version": "1.0",
-    "description": "Create events in Microsoft 365 Group calendars with Create Event V2 fields using service principal authentication"
+    "description": "Creates Microsoft 365 Group calendar events using the same payload fields as Create event (V4)"
   },
   "host": "graph.microsoft.com",
   "basePath": "/v1.0",
@@ -45,13 +45,20 @@
               "type": "object",
               "required": ["subject", "start", "end"],
               "properties": {
-                "subject": { "type": "string" },
+                "subject": {
+                  "type": "string"
+                },
 
                 "body": {
                   "type": "object",
                   "properties": {
-                    "contentType": { "type": "string" },
-                    "content": { "type": "string" }
+                    "contentType": {
+                      "type": "string",
+                      "description": "HTML or Text"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
                   }
                 },
 
@@ -71,22 +78,12 @@
                   }
                 },
 
-                "showAs": {
-                  "type": "string",
-                  "description": "Accepted but ignored for group calendars (Microsoft limitation)"
+                "location": {
+                  "type": "object",
+                  "properties": {
+                    "displayName": { "type": "string" }
+                  }
                 },
-
-                "importance": { "type": "string" },
-
-                "sensitivity": { "type": "string" },
-
-                "isAllDay": { "type": "boolean" },
-
-                "reminderMinutesBeforeStart": { "type": "integer" },
-
-                "isReminderOn": { "type": "boolean" },
-
-                "responseRequested": { "type": "boolean" },
 
                 "attendees": {
                   "type": "array",
@@ -100,23 +97,60 @@
                           "name": { "type": "string" }
                         }
                       },
-                      "type": { "type": "string" }
+                      "type": {
+                        "type": "string",
+                        "description": "required, optional, resource"
+                      }
                     }
                   }
                 },
 
-                "location": {
+                "categories": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+
+                "importance": {
+                  "type": "string"
+                },
+
+                "sensitivity": {
+                  "type": "string"
+                },
+
+                "isAllDay": {
+                  "type": "boolean"
+                },
+
+                "reminderMinutesBeforeStart": {
+                  "type": "integer"
+                },
+
+                "isReminderOn": {
+                  "type": "boolean"
+                },
+
+                "showAs": {
+                  "type": "string",
+                  "description": "Accepted but ignored for group calendars"
+                },
+
+                "recurrence": {
                   "type": "object",
-                  "properties": {
-                    "displayName": { "type": "string" }
-                  }
+                  "description": "Raw recurrence object (same as Create event V4)"
+                },
+
+                "responseRequested": {
+                  "type": "boolean"
                 }
               }
             }
           }
         ],
         "responses": {
-          "201": { "description": "Created" }
+          "201": {
+            "description": "Created"
+          }
         }
       }
     }
