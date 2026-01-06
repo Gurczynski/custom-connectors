@@ -1,0 +1,165 @@
+openapi: 3.0.1
+info:
+  title: Outlook Calendar Events (Graph)
+  version: 1.0.0
+  description: Custom connector to create Outlook calendar events matching Create event (V2)
+
+servers:
+  - url: https://graph.microsoft.com/v1.0
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+          tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
+          scopes:
+            https://graph.microsoft.com/.default: Microsoft Graph access
+
+security:
+  - oauth2:
+      - https://graph.microsoft.com/.default
+
+paths:
+
+  /me/events:
+    post:
+      operationId: CreateCalendarEvent
+      summary: Create calendar event (V2-style)
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subject
+                - start
+                - end
+              properties:
+
+                subject:
+                  type: string
+                  title: Subject
+
+                body:
+                  type: object
+                  title: Body
+                  properties:
+                    contentType:
+                      type: string
+                      enum:
+                        - Text
+                        - HTML
+                      default: HTML
+                    content:
+                      type: string
+
+                start:
+                  type: object
+                  title: Start time
+                  required:
+                    - dateTime
+                    - timeZone
+                  properties:
+                    dateTime:
+                      type: string
+                      format: date-time
+                    timeZone:
+                      type: string
+
+                end:
+                  type: object
+                  title: End time
+                  required:
+                    - dateTime
+                    - timeZone
+                  properties:
+                    dateTime:
+                      type: string
+                      format: date-time
+                    timeZone:
+                      type: string
+
+                isAllDay:
+                  type: boolean
+                  title: Is all day event?
+
+                showAs:
+                  type: string
+                  title: Show as
+                  enum:
+                    - free
+                    - tentative
+                    - busy
+                    - oof
+                    - workingElsewhere
+
+                importance:
+                  type: string
+                  title: Importance
+                  enum:
+                    - low
+                    - normal
+                    - high
+
+                sensitivity:
+                  type: string
+                  title: Sensitivity
+                  enum:
+                    - normal
+                    - personal
+                    - private
+                    - confidential
+
+                reminderMinutesBeforeStart:
+                  type: integer
+                  title: Reminder
+                  default: 1440
+
+                isReminderOn:
+                  type: boolean
+                  title: Is reminder on?
+                  default: true
+
+                attendees:
+                  type: array
+                  title: Required attendees
+                  items:
+                    type: object
+                    properties:
+                      emailAddress:
+                        type: object
+                        properties:
+                          address:
+                            type: string
+                          name:
+                            type: string
+                      type:
+                        type: string
+                        enum:
+                          - required
+                          - optional
+
+                location:
+                  type: object
+                  title: Location
+                  properties:
+                    displayName:
+                      type: string
+
+                responseRequested:
+                  type: boolean
+                  title: Response requested?
+                  default: true
+
+      responses:
+        '201':
+          description: Event created
+          content:
+            application/json:
+              schema:
+                type: object
