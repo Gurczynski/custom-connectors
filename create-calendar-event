@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  title: Outlook Calendar Events V2
+  title: Outlook Events (Service Principal)
   version: "1.0"
-  description: Create Outlook calendar events with full V2 options
+  description: Create Outlook calendar events using app-only authentication
 
 host: graph.microsoft.com
 basePath: /v1.0
@@ -12,8 +12,7 @@ schemes:
 securityDefinitions:
   oauth2:
     type: oauth2
-    flow: accessCode
-    authorizationUrl: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+    flow: application
     tokenUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
     scopes:
       https://graph.microsoft.com/.default: Graph access
@@ -24,10 +23,15 @@ security:
 
 paths:
 
-  /me/calendars:
+  /users/{userId}/calendars:
     get:
-      operationId: ListCalendars
-      summary: List available calendars
+      operationId: ListUserCalendars
+      summary: List calendars for a mailbox
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
       responses:
         200:
           description: OK
@@ -44,20 +48,28 @@ paths:
                     name:
                       type: string
 
-  /me/calendars/{calendarId}/events:
+  /users/{userId}/calendars/{calendarId}/events:
     post:
       operationId: CreateEvent
       summary: Create calendar event
       parameters:
+
+        - name: userId
+          in: path
+          required: true
+          type: string
 
         - name: calendarId
           in: path
           required: true
           type: string
           x-ms-dynamic-values:
-            operationId: ListCalendars
+            operationId: ListUserCalendars
             value-path: value
             value-title: name
+            parameters:
+              userId:
+                parameter: userId
 
         - name: body
           in: body
