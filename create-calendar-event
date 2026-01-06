@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  title: Outlook Events (Service Principal)
+  title: Outlook Calendar Events (Service Principal)
   version: "1.0"
-  description: Create Outlook calendar events using app-only authentication
+  description: Create Outlook calendar events using app-only authentication with calendar selection
 
 host: graph.microsoft.com
 basePath: /v1.0
@@ -24,14 +24,22 @@ security:
 
 paths:
 
+  ###########################################################################
+  # MUST COME FIRST – dynamic-values source operation
+  ###########################################################################
   /users/{userId}/calendars:
     get:
-      operationId: ListUserCalendars
+      operationId: ListCalendars
       summary: List calendars for a mailbox
       parameters:
         - name: userId
           in: path
           required: true
+          type: string
+        # Dummy query parameter REQUIRED for Power Automate runtime registration
+        - name: includeHidden
+          in: query
+          required: false
           type: string
       responses:
         200:
@@ -49,6 +57,9 @@ paths:
                     name:
                       type: string
 
+  ###########################################################################
+  # CREATE EVENT (V2 EQUIVALENT)
+  ###########################################################################
   /users/{userId}/calendars/{calendarId}/events:
     post:
       operationId: CreateEvent
@@ -65,7 +76,7 @@ paths:
           required: true
           type: string
           x-ms-dynamic-values:
-            operationId: ListUserCalendars
+            operationId: ListCalendars
             value-path: value
             value-title: name
             parameters:
