@@ -3,7 +3,7 @@
   "info": {
     "title": "Outlook Calendar Events V2 (Users + Groups)",
     "version": "1.0",
-    "description": "Create Outlook calendar events (Create Event V2 parity) using service principal authentication for user, shared, and group calendars"
+    "description": "Create Outlook calendar events with Create Event (V2) parity for user, shared, and group calendars using service principal authentication"
   },
   "host": "graph.microsoft.com",
   "basePath": "/v1.0",
@@ -25,10 +25,11 @@
     }
   ],
   "paths": {
+
     "/users/{userId}/calendars": {
       "get": {
-        "operationId": "ListUserCalendars",
-        "summary": "List calendars for user or shared mailbox",
+        "operationId": "List_calendars_for_a_user",
+        "summary": "List calendars for a user",
         "parameters": [
           {
             "name": "userId",
@@ -65,10 +66,19 @@
         }
       }
     },
+
     "/groups": {
       "get": {
-        "operationId": "ListGroups",
-        "summary": "List Microsoft 365 Groups",
+        "operationId": "List_groups",
+        "summary": "List groups",
+        "parameters": [
+          {
+            "name": "forceRegister",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -91,10 +101,11 @@
         }
       }
     },
+
     "/users/{userId}/calendars/{calendarId}/events": {
       "post": {
-        "operationId": "CreateUserEvent",
-        "summary": "Create event in user or shared mailbox calendar",
+        "operationId": "Create_event_for_user_calendar",
+        "summary": "Create event for user calendar",
         "parameters": [
           {
             "name": "userId",
@@ -108,7 +119,7 @@
             "required": true,
             "type": "string",
             "x-ms-dynamic-values": {
-              "operationId": "ListUserCalendars",
+              "operationId": "List_calendars_for_a_user",
               "value-path": "value",
               "value-title": "name",
               "parameters": {
@@ -186,10 +197,11 @@
         }
       }
     },
+
     "/groups/{groupId}/calendar/events": {
       "post": {
-        "operationId": "CreateGroupEvent",
-        "summary": "Create event in Microsoft 365 Group calendar",
+        "operationId": "Create_event_for_group_calendar",
+        "summary": "Create event for group calendar",
         "parameters": [
           {
             "name": "groupId",
@@ -197,7 +209,7 @@
             "required": true,
             "type": "string",
             "x-ms-dynamic-values": {
-              "operationId": "ListGroups",
+              "operationId": "List_groups",
               "value-path": "value",
               "value-title": "displayName"
             }
